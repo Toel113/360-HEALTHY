@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sequential String Display</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #displayText {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Code</h1>
+    <div id="displayText"></div>
+
+    <script>
+        function showNextString() {
+            let strings = JSON.parse(localStorage.getItem('strings')) || [
+                "CODE104",
+                "CODE112",
+                "CODE147",
+                "CODE148",
+                "CODE104",
+                "CODE112",
+                "CODE147",
+                "CODE148",
+            ];
+
+            // Check if there are still strings left
+            if (strings.length > 0) {
+                // Get the next string
+                const nextString = strings.shift();
+
+                // Show the next string
+                document.getElementById("displayText").innerText = nextString;
+
+                // Save the updated strings array back to local storage
+                localStorage.setItem('strings', JSON.stringify(strings));
+            } else {
+                // If no strings left, show a message
+                document.getElementById("displayText").innerText = "ไม่มีข้อความเหลือแล้ว";
+            }
+        }
+
+        // Call the function immediately when the page loads
+        window.onload = showNextString;
+    </script>
+</body>
+</html>

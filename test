@@ -1,0 +1,78 @@
+const sql = 'SELECT * FROM clinic_code WHERE idcode = ? AND status_get_code = 0';
+const values = [3976];
+
+connection.query(sql, values, (error, results, fields) => {
+  if (error) {
+    console.error('เกิดข้อผิดพลาดในการดึงข้อมูล: ' + error.stack);
+    return;
+  }
+  
+  // ถ้ามีข้อมูลที่ตอบสนองต่อเงื่อนไข
+  if (results.length > 0) {
+    const row = results[0];
+    console.log('Code:', row.code);
+    const updateSql = 'UPDATE clinic_code SET status_get_code = 1 WHERE idcode = ?';
+    connection.query(updateSql, [row.idcode], (error, updateResults, fields) => {
+      if (error) {
+        console.error('เกิดข้อผิดพลาดในการอัปเดตข้อมูล: ' + error.stack);
+        return;
+      }
+      console.log('อัปเดตสถานะสำเร็จสำหรับ ID:', row.idcode);
+    });
+  } else {
+    console.log('ไม่พบข้อมูลที่ตรงตามเงื่อนไข');
+
+  }
+  connection.end();
+});
+
+const mysql = require('mysql');
+
+function getNextCode(callback) {
+    const connection = mysql.createConnection({
+        host: '206.189.93.101',
+        user: 'medidba',
+        password: 'MeDiSeeSdba?',
+        database: 'clinic_dev' 
+    });
+
+    const nextIdcodeSql = 'SELECT * FROM clinic_code WHERE idcode > ? AND idcode_category = 0 AND status_get_code = 0 ORDER BY idcode ASC LIMIT 1';
+connection.query(nextIdcodeSql, [0], (error, nextIdcodeResults, fields) => {
+  if (error) {
+    console.error('เกิดข้อผิดพลาดในการดึง idcode ถัดไป: ' + error.stack);
+    return;
+  }
+
+  if (nextIdcodeResults.length > 0) {
+    const nextIdcode = nextIdcodeResults[0].idcode;
+    const row = nextIdcodeResults[0];
+    console.log('code',row.code)
+
+    const updateNextIdcodeSql = 'UPDATE clinic_code SET status_get_code = 1 WHERE idcode = ?';
+    connection.query(updateNextIdcodeSql, [nextIdcode], (error, updateNextIdcodeResults, fields) => {
+      if (error) {
+        console.error('เกิดข้อผิดพลาดในการอัปเดต idcode ถัดไป: ' + error.stack);
+        return;
+      }
+      console.log('อัปเดตสถานะสำเร็จสำหรับ idcode ถัดไป:', nextIdcode);
+    });
+  } else {
+    console.log('ไม่พบ idcode ถัดไปที่เป็นไปตามเงื่อนไข');
+  }
+
+  connection.end();
+});
+}
+
+module.exports = getNextCode;
+
+
+
+
+
+const connection = mysql.createConnection({
+  host: '206.189.93.101',
+  user: 'medidba',
+  password: 'MeDiSeeSdba?',
+  database: 'clinic_dev'
+});
